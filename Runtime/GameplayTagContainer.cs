@@ -41,8 +41,8 @@ namespace BandoWare.GameplayTags
 
       internal readonly void Clear()
       {
-         Explicit.Clear();
-         Implicit.Clear();
+         Explicit?.Clear();
+         Implicit?.Clear();
       }
 
       internal readonly void CopyTo(in GameplayTagContainerIndices other)
@@ -231,6 +231,17 @@ namespace BandoWare.GameplayTags
          GameplayTagContainer intersection = new();
          intersection.AddIntersection(lhs, rhs);
          return intersection;
+      }
+
+      public static void Intersection<T, U>(GameplayTagContainer output, in T lhs, in U rhs) where T : IGameplayTagContainer where U : IGameplayTagContainer
+      {
+         if (output == null)
+            throw new ArgumentNullException(nameof(output));
+
+         if (!output.IsEmpty)
+            throw new ArgumentException("Output container must be empty.", nameof(output));
+
+         output.AddIntersection(lhs, rhs);
       }
 
       /// <summary>
