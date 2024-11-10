@@ -147,7 +147,7 @@ GameplayTagContainer intersection = GameplayTagContainer.Intersection(container1
 
 ## AllGameplayTags Generated Class
 
-A Source Generator provides access to any gameplay tag declared within the current assembly without requiring a dedicated field to store the tag value. This approach eliminates the need to repeatedly call `GameplayTagManager.RequestTag`. For example, the gameplay tag "A.B.C" can be accessed through `AllGameplayTags.A.B.C.Get()`, simplifying tag retrieval and enhancing performance by avoiding redundant tag requests.
+A Source Generator provides access to any gameplay tag declared within the current assembly without requiring a dedicated field to store the tag value. This approach eliminates the need to repeatedly call `GameplayTagManager.RequestTag`. For example, the gameplay tag "A.B.C" can be accessed through `AllGameplayTags.A.B.C.Get()`, simplifying tag retrieval and enhancing performance by avoiding redundant tag requests. [Read More](Documentation~/CodeGeneration.md).
 
 ## License
 

@@ -25,7 +25,7 @@ namespace BandoWare.GameplayTag.SourceGenerator
          // Process each GameplayTag attribute found by the receiver
          foreach (AttributeSyntax attribute in receiver.GameplayTagAttributes)
          {
-            string tagArgument = attribute.ArgumentList?.Arguments.FirstOrDefault()?.ToString().Trim('"');
+            string? tagArgument = attribute.ArgumentList?.Arguments.FirstOrDefault()?.ToString().Trim('"');
             if (tagArgument != null)
             {
                AddTagToHierarchy(rootTag, tagArgument);
@@ -92,7 +92,7 @@ namespace BandoWare.GameplayTag.SourceGenerator
       private IEnumerable<string> GetTagPath(TagNode node)
       {
          Stack<string> path = new();
-         TagNode current = node;
+         TagNode? current = node;
 
          while (current != null && current.Name != "AllGameplayTags")
          {
