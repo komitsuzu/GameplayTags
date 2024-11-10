@@ -27,6 +27,11 @@ namespace BandoWare.GameplayTags
 
       public static GameplayTag RequestTag(string name)
       {
+         if (string.IsNullOrEmpty(name))
+         {
+            return GameplayTag.None;
+         }
+
          if (!TryGetDefinition(name, out GameplayTagDefinition definition))
          {
             Debug.LogWarning($"No tag registered with name \"{name}\".");

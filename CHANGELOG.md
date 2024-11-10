@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `GameplayTagManager.RequestTag` will now return `GameplayTag.None` when it receives a null or empty string.
 - `GamplayTagFlags.HideInEditor` is now obsolete and doesn't affect if the tag is visble or not in the Editor. Now, every tag that is child of "Test" tag won't be visible in the editor.
 - `GameplayTagUtility` is now public.
 
