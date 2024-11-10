@@ -101,7 +101,7 @@ namespace BandoWare.GameplayTags.Editor
 
          foreach (GameplayTag tag in GameplayTagManager.GetAllTags())
          {
-            if (tag.Name.StartsWith("Test."))
+            if (tag.Name.StartsWith("Test.") || tag.Name.Equals("Test"))
                continue;
 
             items.Add(new GameplayTagTreeViewItem(tag.RuntimeIndex, tag));
