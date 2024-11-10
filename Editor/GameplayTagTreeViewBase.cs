@@ -101,20 +101,7 @@ namespace BandoWare.GameplayTags.Editor
 
          foreach (GameplayTag tag in GameplayTagManager.GetAllTags())
          {
-            bool hideInEditor = (tag.Flags & GameplayTagFlags.HideInEditor) != 0;
-            GameplayTag parentIt = tag.ParentTag;
-            while (parentIt != GameplayTag.None)
-            {
-               if ((parentIt.Flags & GameplayTagFlags.HideInEditor) != 0)
-               {
-                  hideInEditor = true;
-                  break;
-               }
-
-               parentIt = parentIt.ParentTag;
-            }
-
-            if (hideInEditor)
+            if (tag.Name.StartsWith("Test."))
                continue;
 
             items.Add(new GameplayTagTreeViewItem(tag.RuntimeIndex, tag));
