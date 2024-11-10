@@ -145,6 +145,10 @@ GameplayTagContainer intersection = GameplayTagContainer.Intersection(container1
 - **GameplayTagCountContainer**: Focuses on managing tags with the ability to register callbacks for when tag counts change. It is useful when you need to respond to tag count changes.
 - **GameplayTagContainer**: Designed to store a collection of tags, it is serializable and offers a user-friendly interface in the Unity editor. It provides basic tag management without the event-driven functionality of `GameplayTagCountContainer`.
 
+## AllGameplayTags Generated Class
+
+A Source Generator provides access to any gameplay tag declared within the current assembly without requiring a dedicated field to store the tag value. This approach eliminates the need to repeatedly call `GameplayTagManager.RequestTag`. For example, the gameplay tag "A.B.C" can be accessed through `AllGameplayTags.A.B.C.Get()`, simplifying tag retrieval and enhancing performance by avoiding redundant tag requests.
+
 ## License
 
 This project is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License. See the [LICENSE](LICENSE.md) file for details.
