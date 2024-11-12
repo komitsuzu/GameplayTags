@@ -255,7 +255,7 @@ namespace BandoWare.GameplayTags
       {
          static void OrderedListIntersection(List<int> a, List<int> b, List<int> dst)
          {
-            dst.Capacity = Mathf.Max(dst.Capacity, Mathf.Min(a.Count, b.Count));
+            dst ??= new List<int>(Mathf.Min(a?.Count ?? 0, b?.Count ?? 0));
 
             int i = 0, j = 0;
             while (i < a.Count && j < b.Count)
