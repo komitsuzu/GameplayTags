@@ -255,8 +255,6 @@ namespace BandoWare.GameplayTags
       {
          static void OrderedListIntersection(List<int> a, List<int> b, List<int> dst)
          {
-            dst ??= new List<int>(Mathf.Min(a?.Count ?? 0, b?.Count ?? 0));
-
             int i = 0, j = 0;
             while (i < a.Count && j < b.Count)
             {
@@ -281,6 +279,9 @@ namespace BandoWare.GameplayTags
 
          if (lhs.IsEmpty || rhs.IsEmpty)
             return;
+
+         if (!m_Indices.IsCreated)
+            m_Indices = GameplayTagContainerIndices.Create();
 
          OrderedListIntersection(lhs.Indices.Explicit, rhs.Indices.Explicit, m_Indices.Explicit);
          OrderedListIntersection(lhs.Indices.Implicit, rhs.Indices.Implicit, m_Indices.Implicit);
