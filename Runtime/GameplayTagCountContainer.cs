@@ -206,9 +206,7 @@ namespace BandoWare.GameplayTags
             AddTagInternal(tag, delegates);
 
             foreach (DeferredTagChangedDelegate del in delegates)
-            {
                del.Execute();
-            }
          }
       }
 
@@ -218,14 +216,10 @@ namespace BandoWare.GameplayTags
          using (ListPool<DeferredTagChangedDelegate>.Get(out List<DeferredTagChangedDelegate> delegates))
          {
             foreach (GameplayTag gameplayTag in other.GetExplicitTags())
-            {
                AddTagInternal(gameplayTag, delegates);
-            }
 
             foreach (DeferredTagChangedDelegate del in delegates)
-            {
                del.Execute();
-            }
          }
       }
 
@@ -339,24 +333,16 @@ namespace BandoWare.GameplayTags
                m_TagCountMap.Remove(tagInHierarchy);
 
                if (delegateInfo.OnNewOrRemove != null)
-               {
                   tagChangeDelegates.Add(new DeferredTagChangedDelegate(tagInHierarchy, 0, delegateInfo.OnNewOrRemove));
-               }
 
                if (OnAnyTagNewOrRemove != null)
-               {
                   tagChangeDelegates.Add(new DeferredTagChangedDelegate(tagInHierarchy, 0, OnAnyTagNewOrRemove));
-               }
 
                if (delegateInfo.OnAnyChange != null)
-               {
                   tagChangeDelegates.Add(new DeferredTagChangedDelegate(tagInHierarchy, 0, delegateInfo.OnAnyChange));
-               }
 
                if (OnAnyTagCountChange != null)
-               {
                   tagChangeDelegates.Add(new DeferredTagChangedDelegate(tagInHierarchy, 0, OnAnyTagNewOrRemove));
-               }
 
                continue;
             }
@@ -364,14 +350,10 @@ namespace BandoWare.GameplayTags
             m_TagCountMap[tagInHierarchy] = tagCount - 1;
 
             if (delegateInfo.OnAnyChange != null)
-            {
                tagChangeDelegates.Add(new DeferredTagChangedDelegate(tagInHierarchy, tagCount - 1, delegateInfo.OnAnyChange));
-            }
 
             if (OnAnyTagCountChange != null)
-            {
                tagChangeDelegates.Add(new DeferredTagChangedDelegate(tagInHierarchy, tagCount - 1, OnAnyTagNewOrRemove));
-            }
          }
       }
 
@@ -385,14 +367,10 @@ namespace BandoWare.GameplayTags
                m_TagDelegateInfoMap.TryGetValue(tag, out GameplayTagDelegateInfo delegateInfo);
 
                if (delegateInfo.OnNewOrRemove != null)
-               {
                   tagChangeDelegates.Add(new DeferredTagChangedDelegate(tag, 0, delegateInfo.OnNewOrRemove));
-               }
 
                if (OnAnyTagNewOrRemove != null)
-               {
                   tagChangeDelegates.Add(new DeferredTagChangedDelegate(tag, 0, OnAnyTagNewOrRemove));
-               }
             }
 
             m_ExplicitTagCountMap.Clear();
@@ -400,9 +378,7 @@ namespace BandoWare.GameplayTags
             m_Indices.Clear();
 
             foreach (DeferredTagChangedDelegate del in tagChangeDelegates)
-            {
                del.Execute();
-            }
          }
       }
 
