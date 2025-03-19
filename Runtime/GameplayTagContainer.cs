@@ -48,8 +48,8 @@ namespace BandoWare.GameplayTags
       internal readonly void CopyTo(in GameplayTagContainerIndices other)
       {
          other.Clear();
-         other.Explicit.AddRange(other.Explicit);
-         other.Implicit.AddRange(other.Implicit);
+         other.Explicit.AddRange(this.Explicit);
+         other.Implicit.AddRange(this.Implicit);
       }
    }
 
@@ -215,7 +215,7 @@ namespace BandoWare.GameplayTags
             return;
 
          GameplayTagContainerIndices.Create(ref dest.m_Indices);
-         dest.m_Indices.CopyTo(src.Indices);
+         src.Indices.CopyTo(dest.m_Indices);
       }
 
       /// <summary>
@@ -332,8 +332,9 @@ namespace BandoWare.GameplayTags
          }
 
          GameplayTagContainer union = new();
+         GameplayTagContainerIndices.Create(ref union.m_Indices);
 
-         if (lhs.IsEmpty || rhs.IsEmpty)
+         if (lhs.IsEmpty && rhs.IsEmpty)
             return union;
 
          if (lhs.IsEmpty)
