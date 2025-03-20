@@ -64,7 +64,7 @@ namespace BandoWare.GameplayTags
          if (s_IsInitialized)
             return;
 
-         GamplayTagRegistrationContext context = new();
+         GameplayTagRegistrationContext context = new();
 
          foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
          {
