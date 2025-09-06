@@ -19,5 +19,6 @@
       "url": "https://www.github.com/BandoWare"
     },
     "dependencies": {
+      "com.unity.nuget.newtonsoft-json": "3.0.2"
     }
   }

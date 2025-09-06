@@ -21,6 +21,11 @@ namespace BandoWare.GameplayTags.Editor
          SerializedProperty nameProperty = property.FindPropertyRelative("m_Name");
          GameplayTag tag = GameplayTagManager.RequestTag(nameProperty.stringValue);
 
+         if (!tag.IsValid)
+         {
+            s_TempContent.text = $"Invalid Tag: {nameProperty.stringValue}";
+            s_TempContent.tooltip = "The tag is not valid. It may have been deleted or renamed.";
+         }
          if (tag != GameplayTag.None)
          {
             s_TempContent.text = tag.Name;
@@ -29,6 +34,7 @@ namespace BandoWare.GameplayTags.Editor
          else
          {
             s_TempContent.text = "Select...";
+            s_TempContent.tooltip = "No tag selected.";
          }
 
          if (EditorGUI.DropdownButton(position, s_TempContent, FocusType.Keyboard))

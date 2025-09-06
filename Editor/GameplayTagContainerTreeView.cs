@@ -88,13 +88,13 @@ namespace BandoWare.GameplayTags.Editor
          {
             SerializedProperty element = m_ExplicitTagsProperty.GetArrayElementAtIndex(i);
             GameplayTag tag = GameplayTagManager.RequestTag(element.stringValue);
+            if (!tag.IsValid)
+               continue;
+
             GameplayTagTreeViewItem item = FindItem(tag.RuntimeIndex);
 
             if (item == null)
-            {
-               Debug.Log(element.stringValue);
                continue;
-            }
 
             item.IsExplicitIncluded = true;
             item.IsIncluded = true;
@@ -116,8 +116,10 @@ namespace BandoWare.GameplayTags.Editor
          {
             SerializedProperty element = m_ExplicitTagsProperty.GetArrayElementAtIndex(i);
             GameplayTag tag = GameplayTagManager.RequestTag(element.stringValue);
-            GameplayTagTreeViewItem item = FindItem(tag.RuntimeIndex);
+            if (!tag.IsValid)
+               continue;
 
+            GameplayTagTreeViewItem item = FindItem(tag.RuntimeIndex);
             if (item == null)
                continue;
 

@@ -1,25 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Assertions;
 
 namespace BandoWare.GameplayTags
 {
+   internal class GameplayTagRegistrationError
+   {
+      public string Message { get; }
+      public IGameplayTagSource Source { get; }
+      public string TagName { get; }
+
+      public GameplayTagRegistrationError(string message, IGameplayTagSource source, string tagName)
+      {
+         Message = message;
+         Source = source;
+         TagName = tagName;
+      }
+   }
+
    internal class GameplayTagRegistrationContext
    {
       private List<GameplayTagDefinition> m_Definition = new();
       private Dictionary<string, GameplayTagDefinition> m_TagsByName = new();
+      private string m_LastRegistrarionErrorMessage;
+      private List<GameplayTagRegistrationError> m_RegistrationErrors = new();
 
-      public void RegisterTag(string name, string description = null, GameplayTagFlags flags = GameplayTagFlags.None)
+      public bool RegisterTag(string name, string description, GameplayTagFlags flags, IGameplayTagSource source)
       {
-         GameplayTagUtility.ValidateName(name);
+         Assert.IsNotNull(source, "Source cannot be null when registering a tag.");
+         return RegisterTagInternal(name, description, flags, source);
+      }
 
-         if (m_TagsByName.ContainsKey(name))
-            return;
+      private bool RegisterTagInternal(string name, string description, GameplayTagFlags flags, IGameplayTagSource source)
+      {
+         if (!GameplayTagUtility.IsNameValid(name, out string errorMessage))
+            m_RegistrationErrors.Add(new GameplayTagRegistrationError(errorMessage, source, name));
+
+         if (m_TagsByName.TryGetValue(name, out GameplayTagDefinition existingDefinition))
+         {
+            existingDefinition.Description ??= description;
+            return true;
+         }
 
          GameplayTagDefinition definition = new(name, description, flags);
 
+         if (source != null)
+            definition.AddSource(source);
+
          m_TagsByName.Add(name, definition);
          m_Definition.Add(definition);
+
+         return true;
       }
 
       public GameplayTagDefinition[] GenerateDefinitions()
@@ -36,7 +68,7 @@ namespace BandoWare.GameplayTags
 
       private void RegisterNoneTag()
       {
-         m_Definition.Insert(0, GameplayTagDefinition.CreateNoneTagDefinition());
+         m_Definition.Insert(0, GameplayTagDefinition.NoneTagDefinition);
       }
 
       private void RegisterMissingParents()
@@ -55,7 +87,7 @@ namespace BandoWare.GameplayTags
                   continue;
                }
 
-               RegisterTag(parentTagName, string.Empty, flags);
+               RegisterTagInternal(parentTagName, string.Empty, flags, null);
             }
          }
       }
@@ -116,6 +148,11 @@ namespace BandoWare.GameplayTags
       {
          for (int i = 0; i < m_Definition.Count; i++)
             m_Definition[i].SetRuntimeIndex(i);
+      }
+
+      public IEnumerable<GameplayTagRegistrationError> GetRegistrationErrors()
+      {
+         return m_RegistrationErrors;
       }
    }
 }

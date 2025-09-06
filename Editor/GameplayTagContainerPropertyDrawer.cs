@@ -97,9 +97,17 @@ namespace BandoWare.GameplayTags.Editor
          for (int i = 0; i < explicitTagsProperty.arraySize; i++)
          {
             SerializedProperty element = explicitTagsProperty.GetArrayElementAtIndex(i);
-            GameplayTag tag = GameplayTagManager.RequestTag(element.stringValue);
+            GameplayTag tag = GameplayTagManager.RequestTag(element.stringValue, false);
 
-            s_TempContent.text = element.stringValue;
+            if (!tag.IsValid)
+            {
+               s_TempContent.text = element.stringValue + " (Invalid Tag)";
+            }
+            else
+            {
+               s_TempContent.text = element.stringValue;
+            }
+
             s_TempContent.tooltip = tag.Description ?? "No description";
             tagRect.width = EditorStyles.label.CalcSize(s_TempContent).x + 22;
             tagsRect.width = Mathf.Max(tagsRect.width, tagRect.width);

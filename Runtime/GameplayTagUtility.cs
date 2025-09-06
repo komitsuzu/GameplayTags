@@ -89,7 +89,7 @@ namespace BandoWare.GameplayTags
          return name[(indexOfPoint + 1)..];
       }
 
-      public static void ValidateName(string name)
+      public static bool IsNameValid(string name, out string errorMessage)
       {
          static bool IsValidLabelCharacter(char c)
          {
@@ -111,7 +111,10 @@ namespace BandoWare.GameplayTags
          }
 
          if (string.IsNullOrEmpty(name))
-            throw new ArgumentException("Tag name cannot be null or empty.");
+         {
+            errorMessage = "Tag name cannot be null or empty.";
+            return false;
+         }
 
          int position = 0;
          if (AcceptLabel(name, ref position))
@@ -120,14 +123,27 @@ namespace BandoWare.GameplayTags
             {
                position++;
                if (!AcceptLabel(name, ref position))
-                  throw new ArgumentException($"Invalid tag name '{name}'. Unexpected character at position {position}.");
+               {
+                  errorMessage = $"Invalid tag name '{name}'. Unexpected character at position {position}.";
+                  return false;
+               }
             }
          }
 
          if (position == name.Length)
-            return;
+         {
+            errorMessage = null;
+            return true;
+         }
 
-         throw new ArgumentException($"Invalid tag name '{name}'. Unexpected character at position {position}.");
+         errorMessage = $"Invalid tag name '{name}'. Unexpected character at position {position}.";
+         return false;
+      }
+
+      public static void ValidateName(string name)
+      {
+         if (!IsNameValid(name, out string errorMessage))
+            throw new ArgumentException(errorMessage);
       }
    }
 }

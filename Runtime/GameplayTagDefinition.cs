@@ -8,7 +8,11 @@ namespace BandoWare.GameplayTags
    [DebuggerDisplay("{TagName,nq}")]
    internal class GameplayTagDefinition
    {
-      public GameplayTag Tag => new(TagName, RuntimeIndex);
+      public static GameplayTagDefinition NoneTagDefinition { get; } = new();
+
+      public GameplayTag Tag => new(this);
+
+      public bool IsValid => RuntimeIndex >= 0;
 
       [DebuggerBrowsable(DebuggerBrowsableState.Never)]
       public ReadOnlySpan<GameplayTagDefinition> Children => new(m_Children);
@@ -43,7 +47,7 @@ namespace BandoWare.GameplayTags
       /// <summary>
       /// The description of the tag. This is to provide more information about the tag during development.
       /// </summary>
-      public string Description { get; }
+      public string Description { get; internal set; }
 
       /// <summary>
       /// The flags of the tag.
@@ -63,10 +67,12 @@ namespace BandoWare.GameplayTags
       public int RuntimeIndex { get; internal set; }
       public GameplayTagDefinition ParentTagDefinition { get; private set; }
 
-      private GameplayTag[] m_ChildTags;
-      private GameplayTag[] m_HierarchyTags;
-      private GameplayTag[] m_ParentTags;
-      private GameplayTagDefinition[] m_Children;
+      private GameplayTag[] m_ParentTags = Array.Empty<GameplayTag>();
+      private GameplayTag[] m_ChildTags = Array.Empty<GameplayTag>();
+      private GameplayTag[] m_HierarchyTags = Array.Empty<GameplayTag>();
+      private GameplayTagDefinition[] m_Children = Array.Empty<GameplayTagDefinition>();
+      private List<IGameplayTagSource> m_Sources = new();
+      private int m_NameHash;
 
       /// <summary>
       /// Default constructor to create a "None" tag definition.
@@ -83,6 +89,7 @@ namespace BandoWare.GameplayTags
          m_ChildTags = Array.Empty<GameplayTag>();
          m_HierarchyTags = Array.Empty<GameplayTag>();
          m_Children = Array.Empty<GameplayTagDefinition>();
+         m_NameHash = TagName.GetHashCode();
       }
 
       public GameplayTagDefinition(string name, string description, GameplayTagFlags flags = GameplayTagFlags.None)
@@ -90,14 +97,17 @@ namespace BandoWare.GameplayTags
          TagName = name;
          Description = description;
          Flags = flags;
+         m_NameHash = name.GetHashCode();
 
          Label = GameplayTagUtility.GetLabel(name);
          HierarchyLevel = GameplayTagUtility.GetHeirarchyLevelFromName(name);
       }
 
-      public static GameplayTagDefinition CreateNoneTagDefinition()
+      public static GameplayTagDefinition CreateInvalidDefinition(string name)
       {
-         return new GameplayTagDefinition();
+         GameplayTagDefinition invalidDefinition = new(name, "Invalid Tag");
+         invalidDefinition.SetRuntimeIndex(-1);
+         return invalidDefinition;
       }
 
       /// <summary>
@@ -172,6 +182,22 @@ namespace BandoWare.GameplayTags
       public void SetRuntimeIndex(int index)
       {
          RuntimeIndex = index;
+      }
+
+      public void AddSource(IGameplayTagSource source)
+      {
+         if (!m_Sources.Contains(source))
+            m_Sources.Add(source);
+      }
+
+      public override int GetHashCode()
+      {
+         return m_NameHash;
+      }
+
+      public IEnumerable<IGameplayTagSource> GetSources()
+      {
+         return m_Sources;
       }
    }
 }

@@ -8,10 +8,13 @@ namespace BandoWare.GameplayTags
 {
    public class GameplayTagManager
    {
+      public static bool HasBeenReloaded => s_HasBeenReloaded;
+
       private static Dictionary<string, GameplayTagDefinition> s_TagDefinitionsByName = new();
       private static GameplayTagDefinition[] s_TagsDefinitions;
       private static GameplayTag[] s_Tags;
       private static bool s_IsInitialized;
+      private static bool s_HasBeenReloaded;
 
       public static ReadOnlySpan<GameplayTag> GetAllTags()
       {
@@ -25,17 +28,17 @@ namespace BandoWare.GameplayTags
          return s_TagsDefinitions[runtimeIndex];
       }
 
-      public static GameplayTag RequestTag(string name)
+      public static GameplayTag RequestTag(string name, bool logWarningIfNotFound = true)
       {
          if (string.IsNullOrEmpty(name))
-         {
             return GameplayTag.None;
-         }
 
          if (!TryGetDefinition(name, out GameplayTagDefinition definition))
          {
-            Debug.LogWarning($"No tag registered with name \"{name}\".");
-            return GameplayTag.None;
+            if (logWarningIfNotFound)
+               Debug.LogWarning($"No tag registered with name \"{name}\".");
+
+            return GameplayTagDefinition.CreateInvalidDefinition(name).Tag;
          }
 
          return definition.Tag;
@@ -66,20 +69,29 @@ namespace BandoWare.GameplayTags
 
          GameplayTagRegistrationContext context = new();
 
+#if UNITY_EDITOR
+
+         // Register tags from all assemblies with the GameplayTagAttribute attribute.
          foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
          {
-            foreach (GameplayTagAttribute attribute in assembly.GetCustomAttributes<GameplayTagAttribute>())
-            {
-               try
-               {
-                  context.RegisterTag(attribute.TagName, attribute.Description, attribute.Flags);
-               }
-               catch (Exception exception)
-               {
-                  Debug.LogError($"Failed to register tag {attribute.TagName} from assembly {assembly.FullName} with error: {exception.Message}");
-               }
-            }
+            AssemblyGameplayTagSource source = new(assembly);
+            source.RegisterTags(context);
          }
+
+         // Register tags from all JSON files in the ProjectSettings/GameplayTags directory.
+         foreach (IGameplayTagSource source in FileGameplayTagSource.GetAllFileSources())
+            source.RegisterTags(context);
+
+#else
+
+         // Register tags from the GameplayTags file in StreamingAssets.   
+         BuildGameplayTagSource buildSource = new();
+         buildSource.RegisterTags(context);
+
+#endif
+
+         foreach (GameplayTagRegistrationError error in context.GetRegistrationErrors())
+            Debug.LogError($"Failed to register gameplay tag \"{error.TagName}\": {error.Message} (Source: {error.Source?.Name ?? "Unknown"})");
 
          s_TagsDefinitions = context.GenerateDefinitions();
 
@@ -93,6 +105,16 @@ namespace BandoWare.GameplayTags
             s_TagDefinitionsByName[definition.TagName] = definition;
 
          s_IsInitialized = true;
+      }
+
+      public static void ReloadTags()
+      {
+         s_IsInitialized = false;
+         s_TagDefinitionsByName.Clear();
+
+         InitializeIfNeeded();
+
+         s_HasBeenReloaded = true;
       }
    }
 }

@@ -11,16 +11,22 @@ namespace BandoWare.GameplayTags
       /// <summary>
       /// Represents an invalid tag.
       /// </summary>
-      public static readonly GameplayTag None = new() { m_RuntimeIndex = 0 };
+      public static readonly GameplayTag None = new() { m_Definition = GameplayTagDefinition.NoneTagDefinition };
 
-      internal readonly int RuntimeIndex => m_RuntimeIndex;
+      public readonly bool IsNone => m_Definition == null || m_Definition == GameplayTagDefinition.NoneTagDefinition;
+
+      public readonly bool IsValid => m_Definition != null && m_Definition.IsValid;
+
+      public readonly bool IsLeaf => m_Definition != null && m_Definition.Children.Length == 0;
+
+      internal readonly int RuntimeIndex => m_Definition.RuntimeIndex;
 
       internal readonly GameplayTagDefinition Definition
       {
          get
          {
             ValidateIsNotNone();
-            return GameplayTagManager.GetDefinitionFromRuntimeIndex(m_RuntimeIndex);
+            return m_Definition ?? GameplayTagDefinition.NoneTagDefinition;
          }
       }
 
@@ -80,12 +86,12 @@ namespace BandoWare.GameplayTags
       private string m_Name;
 
       [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-      private int m_RuntimeIndex;
+      private GameplayTagDefinition m_Definition;
 
-      internal GameplayTag(string name, int runtimeTagIndex)
+      internal GameplayTag(GameplayTagDefinition definition)
       {
-         m_Name = name;
-         m_RuntimeIndex = runtimeTagIndex;
+         m_Definition = definition ?? GameplayTagDefinition.NoneTagDefinition;
+         m_Name = m_Definition.TagName;
       }
 
       /// <inheritdoc cref="GameplayTagDefinition.IsChildOf(GameplayTag)"/>/>
@@ -94,7 +100,6 @@ namespace BandoWare.GameplayTags
          ValidateIsNotNone();
          return Definition.IsParentOf(tag);
       }
-
 
       /// <inheritdoc cref="GameplayTagDefinition.IsChildOf(GameplayTag)"/>/>
       public readonly bool IsChildOf(in GameplayTag parentTag)
@@ -105,13 +110,13 @@ namespace BandoWare.GameplayTags
 
       public readonly bool Equals(GameplayTag other)
       {
-         return m_RuntimeIndex == other.m_RuntimeIndex;
+         return m_Definition == other.m_Definition;
       }
 
       public override readonly bool Equals(object obj)
       {
          if (obj is GameplayTag other)
-            return other.m_RuntimeIndex == m_RuntimeIndex;
+            return m_Definition == other.m_Definition;
 
          if (obj is string otherStr)
             return m_Name == otherStr;
@@ -121,12 +126,12 @@ namespace BandoWare.GameplayTags
 
       public override readonly int GetHashCode()
       {
-         return m_RuntimeIndex;
+         return Definition.GetHashCode();
       }
 
       public override readonly string ToString()
       {
-         if (m_RuntimeIndex == 0)
+         if (IsNone)
             return "<None>";
 
          return m_Name;
@@ -140,38 +145,25 @@ namespace BandoWare.GameplayTags
             return;
          }
 
-         GameplayTag tag = GameplayTagManager.RequestTag(m_Name);
-         if (tag == None)
-         {
+         this = GameplayTagManager.RequestTag(m_Name);
+         if (!IsValid)
             UnityEngine.Debug.LogWarning($"No tag registered with name \"{m_Name}\".");
-            this = None;
-            return;
-         }
-
-         this = tag;
       }
 
       void ISerializationCallbackReceiver.OnBeforeSerialize()
       {
-         if (m_RuntimeIndex == 0)
+         if (IsNone)
          {
             m_Name = null;
             return;
          }
 
-         GameplayTagDefinition definiton = GameplayTagManager.GetDefinitionFromRuntimeIndex(m_RuntimeIndex);
-         if (definiton == null)
-         {
-            m_Name = null;
-            return;
-         }
-
-         m_Name = definiton.TagName;
+         m_Name = Definition.TagName;
       }
 
       private readonly void ValidateIsNotNone()
       {
-         if (m_RuntimeIndex == 0)
+         if (m_Definition == GameplayTagDefinition.NoneTagDefinition)
             throw new InvalidOperationException("Cannot perform operation on GameplayTag.None.");
       }
 
@@ -182,12 +174,12 @@ namespace BandoWare.GameplayTags
 
       public static bool operator ==(in GameplayTag lhs, in GameplayTag rhs)
       {
-         return lhs.m_RuntimeIndex == rhs.m_RuntimeIndex;
+         return lhs.Definition == rhs.Definition;
       }
 
       public static bool operator !=(in GameplayTag lhs, in GameplayTag rhs)
       {
-         return lhs.m_RuntimeIndex != rhs.m_RuntimeIndex;
+         return lhs.Definition != rhs.Definition;
       }
    }
 }

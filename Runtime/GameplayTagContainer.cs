@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace BandoWare.GameplayTags
@@ -77,7 +76,7 @@ namespace BandoWare.GameplayTags
       /// <summary>
       /// Gets the indeces of tags in this container.
       /// </summary>
-      GameplayTagContainerIndices Indices { get; }
+      public GameplayTagContainerIndices Indices { get; }
 
       /// <summary>
       /// Adds a tag to this container.
@@ -171,7 +170,6 @@ namespace BandoWare.GameplayTags
       public GameplayTagContainerIndices Indices => m_Indices;
 
       [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "It's used for debugging")]
       private string DebuggerDisplay => $"Count (Explicit, Total) = ({ExplicitTagCount}, {TagCount})";
 
       [SerializeField]
@@ -544,19 +542,6 @@ namespace BandoWare.GameplayTags
 
       void ISerializationCallbackReceiver.OnBeforeSerialize()
       {
-         m_SerializedExplicitTags ??= new();
-
-         m_SerializedExplicitTags.Clear();
-         if (m_Indices.Explicit == null)
-            return;
-
-         foreach (GameplayTag tag in new GameplayTagEnumerator(m_Indices.Explicit))
-         {
-            if (tag == GameplayTag.None)
-               continue;
-
-            m_SerializedExplicitTags.Add(tag.Name);
-         }
       }
 
       void ISerializationCallbackReceiver.OnAfterDeserialize()
@@ -567,12 +552,9 @@ namespace BandoWare.GameplayTags
 
          for (int i = 0; i < m_SerializedExplicitTags.Count;)
          {
-            GameplayTag tag = GameplayTagManager.RequestTag(m_SerializedExplicitTags[i]);
-            if (tag == GameplayTag.None)
-            {
-               m_SerializedExplicitTags.RemoveAt(i);
+            GameplayTag tag = GameplayTagManager.RequestTag(m_SerializedExplicitTags[i], false);
+            if (!tag.IsValid)
                continue;
-            }
 
             int index = BinarySearchUtility.Search(m_Indices.Explicit, tag.RuntimeIndex);
             if (index < 0)
@@ -581,8 +563,6 @@ namespace BandoWare.GameplayTags
                i++;
                continue;
             }
-
-            m_SerializedExplicitTags.RemoveAt(i);
          }
 
          FillImplictTags();

@@ -19,7 +19,7 @@ namespace BandoWare.GameplayTags.Editor
          m_TagNameProperty.serializedObject.Update();
 
          GameplayTag tag = GameplayTagManager.RequestTag(m_TagNameProperty.stringValue);
-         if (tag != GameplayTag.None)
+         if (!tag.IsNone && !tag.IsValid)
          {
             GameplayTagTreeViewItem item = FindItem(tag.RuntimeIndex);
             if (item != null)
