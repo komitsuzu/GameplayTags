@@ -1,5 +1,41 @@
 # Gameplay Tags for Unity
 
+## Table of Contents
+
+* [Gameplay Tags for Unity](#gameplay-tags-for-unity)
+
+  * [Overview](#overview)
+  * [Features](#features)
+  * [Installation](#installation)
+  * [Usage](#usage)
+
+    * [Registering Tags](#registering-tags)
+
+      * [Assembly Attributes](#1-assembly-attributes)
+      * [JSON Files in Project Settings](#2-json-files-in-project-settings)
+    * [GameplayTagCountContainer](#gameplaytagcountcontainer)
+
+      * [Creating a Tag Container](#creating-a-tag-container)
+      * [Adding a Tag](#adding-a-tag)
+      * [Removing a Tag](#removing-a-tag)
+      * [Registering a Callback for Tag Changes](#registering-a-callback-for-tag-changes)
+      * [Removing a Callback](#removing-a-callback)
+      * [Querying the Count of a Tag](#querying-the-count-of-a-tag)
+      * [Clearing All Tags](#clearing-all-tags)
+    * [GameplayTagContainer](#gameplaytagcontainer)
+
+      * [Creating a Tag Container](#creating-a-tag-container-1)
+      * [Adding a Tag](#adding-a-tag-1)
+      * [Removing a Tag](#removing-a-tag-1)
+      * [Clearing All Tags](#clearing-all-tags-1)
+    * [Union and Intersection Operations](#union-and-intersection-operations)
+
+      * [Creating a Union of Tag Containers](#creating-a-union-of-tag-containers)
+      * [Creating an Intersection of Tag Containers](#creating-an-intersection-of-tag-containers)
+  * [Differences between GameplayTagCountContainer and GameplayTagContainer](#differences-between-gameplaytagcountcontainer-and-gameplaytagcontainer)
+  * [AllGameplayTags Generated Class](#allgameplaytags-generated-class)
+  * [License](#license)
+
 ## Overview
 
 <div align="center">
@@ -31,13 +67,65 @@ This project is an implementation of gameplay tags, similar to those found in Un
 
 ### Registering Tags
 
-Gameplay tags are registered through attributes in the assembly. Here is an example:
+Gameplay tags can now be registered in **two different ways**:
+
+#### 1. Assembly Attributes
+
+Use this approach when your code requires certain tags to exist. For example:
 
 ```csharp
 [assembly: GameplayTag("Damage.Fatal")]
 [assembly: GameplayTag("Damage.Miss")]
-[assembly: GameplayTag("CrowdControl.Stunned")]
-[assembly: GameplayTag("CrowdControl.Slow")]
+[assembly:GameplayTag("CrowdControl.Stunned")]
+[assembly:GameplayTag("CrowdControl.Slow")]
+```
+
+#### 2. JSON Files in Project Settings
+
+Alternatively, you can register tags through **JSON files**.
+Create a folder named `ProjectSettings/GameplayTags` in your Unity project.
+Every `.json` file inside this folder will be scanned and its tags automatically registered.
+
+The JSON format is based on an object where each property is a tag name.
+
+* The value of the property must be another object.
+* You can leave it empty, or add metadata:
+
+  * `Comment`: developer-facing description.
+  * `Children`: nested object containing child tags.
+
+👉 **Important notes:**
+
+* You can declare tags **directly** at the root level, or organize them with `Children`.
+* Both approaches can be **mixed in the same file**.
+* The `Children` property is **recursive**, so tags can be nested at any depth if needed.
+
+---
+
+#### Example mixing both styles
+
+```json
+{
+  // Direct tags
+  "CrowdControl.Standard": {},
+  "Damage.Fatal": {},
+
+  // Direct tag with a comment
+  "Damage.Miss": {
+    "Comment": "Attack landed but did not cause damage"
+  },
+
+  // Hierarchical tags
+  "CrowdControl": {
+    "Comment": "Crowd control tags",
+    "Children": {
+      "Stunned": {
+        "Comment": "Unit cannot act at all"
+      },
+      "Slow": {}
+    }
+  }
+}
 ```
 
 ### GameplayTagCountContainer
