@@ -14,6 +14,8 @@ namespace BandoWare.GameplayTags
 
       public bool IsValid => RuntimeIndex >= 0;
 
+      public int SourceCount => m_Sources.Count;
+
       [DebuggerBrowsable(DebuggerBrowsableState.Never)]
       public ReadOnlySpan<GameplayTagDefinition> Children => new(m_Children);
 
@@ -66,6 +68,7 @@ namespace BandoWare.GameplayTags
       public int HierarchyLevel { get; }
       public int RuntimeIndex { get; internal set; }
       public GameplayTagDefinition ParentTagDefinition { get; private set; }
+
 
       private GameplayTag[] m_ParentTags = Array.Empty<GameplayTag>();
       private GameplayTag[] m_ChildTags = Array.Empty<GameplayTag>();
@@ -195,9 +198,17 @@ namespace BandoWare.GameplayTags
          return m_NameHash;
       }
 
-      public IEnumerable<IGameplayTagSource> GetSources()
+      public IGameplayTagSource GetSource(int index)
       {
-         return m_Sources;
+         if (index < 0 || index >= m_Sources.Count)
+            throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
+
+         return m_Sources[index];
+      }
+
+      public IEnumerable<IGameplayTagSource> GetAllSources()
+      {
+         return m_Sources.AsReadOnly();
       }
    }
 }

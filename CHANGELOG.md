@@ -7,12 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-
 ### Added
 
 - Added `GameplayTagContainerPool`.
 - Added `AllGameplayTags` source generator.
 - Added `GameplayTagContainer.GetDiffExplicitTags`.
+- Added support for defining tags in JSON files inside `ProjectSettings/GameplayTags/`, in addition to the existing attribute-based registration.
+- Added `GameplayTag.IsValid` property: indicates whether a tag is valid, making it easier to identify tags that were deleted, renamed, or referenced in code but no longer exist.
 
 ### Fixed
 
@@ -24,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GameplayTagManager.RequestTag` will now return `GameplayTag.None` when it receives a null or empty string.
 - `GamplayTagFlags.HideInEditor` is now obsolete and doesn't affect if the tag is visble or not in the Editor. Now, every tag that is child of "Test" tag won't be visible in the editor.
 - `GameplayTagUtility` is now public.
+- Enhanced the tag selection menu with multiple improvements, including the ability to add and remove tags directly from the Editor.
 
 ## [0.1.0-beta.4]
 

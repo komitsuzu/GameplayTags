@@ -12,7 +12,6 @@ namespace BandoWare.GameplayTags.Editor
       public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
       {
          label = EditorGUI.BeginProperty(position, label, property);
-
          position = EditorGUI.PrefixLabel(position, label);
 
          int oldIndentLevel = EditorGUI.indentLevel;
@@ -30,6 +29,11 @@ namespace BandoWare.GameplayTags.Editor
          {
             s_TempContent.text = tag.Name;
             s_TempContent.tooltip = tag.Description;
+         }
+         else if (!tag.IsValid)
+         {
+            s_TempContent.text = $"Invalid Tag: {nameProperty.stringValue}";
+            s_TempContent.tooltip = "The tag is not valid. It may have been deleted or renamed.";
          }
          else
          {

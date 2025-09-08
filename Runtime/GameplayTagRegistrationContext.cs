@@ -40,6 +40,10 @@ namespace BandoWare.GameplayTags
          if (m_TagsByName.TryGetValue(name, out GameplayTagDefinition existingDefinition))
          {
             existingDefinition.Description ??= description;
+
+            if (source != null)
+               existingDefinition.AddSource(source);
+
             return true;
          }
 

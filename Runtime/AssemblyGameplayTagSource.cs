@@ -6,7 +6,7 @@ namespace BandoWare.GameplayTags
 {
    internal class AssemblyGameplayTagSource : IGameplayTagSource
    {
-      public string Name => $"Assembly: {m_Assembly.GetName().Name}";
+      public string Name => m_Assembly.GetName().Name;
 
       private Assembly m_Assembly;
 

@@ -52,7 +52,7 @@ namespace BandoWare.GameplayTags.Editor
          bool isNone = args.item is not GameplayTagTreeViewItem;
          float indent = GetContentIndent(args.item);
          Rect rect = args.rowRect;
-         rect.xMin += indent - (hasSearch ? 14 : 0);
+         rect.xMin += indent;
 
          if (isNone)
          {
@@ -68,11 +68,8 @@ namespace BandoWare.GameplayTags.Editor
          }
 
          GameplayTagTreeViewItem item = args.item as GameplayTagTreeViewItem;
+         DoTagRowGUI(rect, item);
 
-         EditorGUI.BeginChangeCheck();
-
-         s_TempContent.text = hasSearch ? item.DisplayName : args.label;
-         s_TempContent.tooltip = item.Tag.Description;
          if (GUI.Button(rect, s_TempContent, EditorStyles.label))
          {
             m_TagNameProperty.stringValue = item.Tag.Name;
@@ -83,4 +80,3 @@ namespace BandoWare.GameplayTags.Editor
       }
    }
 }
-

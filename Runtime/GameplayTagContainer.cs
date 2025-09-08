@@ -550,7 +550,7 @@ namespace BandoWare.GameplayTags
          if (m_SerializedExplicitTags == null || m_SerializedExplicitTags.Count == 0)
             return;
 
-         for (int i = 0; i < m_SerializedExplicitTags.Count;)
+         for (int i = 0; i < m_SerializedExplicitTags.Count; i++)
          {
             GameplayTag tag = GameplayTagManager.RequestTag(m_SerializedExplicitTags[i], false);
             if (!tag.IsValid)
@@ -558,11 +558,7 @@ namespace BandoWare.GameplayTags
 
             int index = BinarySearchUtility.Search(m_Indices.Explicit, tag.RuntimeIndex);
             if (index < 0)
-            {
                m_Indices.Explicit.Insert(~index, tag.RuntimeIndex);
-               i++;
-               continue;
-            }
          }
 
          FillImplictTags();
