@@ -11,6 +11,7 @@ namespace BandoWare.GameplayTags.Editor
       private const float k_TagGap = 4.0f;
       private const float k_ButtonsWidth = 90f;
       private const float k_ButtonHeight = 20f;
+      private const float k_TagHeight = 18f;
 
       private static GUIContent s_TempContent = new();
       private static readonly GUIContent s_RemoveTagContent = new("-", "Remove tag");
@@ -61,11 +62,16 @@ namespace BandoWare.GameplayTags.Editor
          if (tags.hasMultipleDifferentValues || tags.arraySize == 0)
             return EditorGUIUtility.singleLineHeight;
 
-         return tags.arraySize * (EditorGUIUtility.singleLineHeight + k_TagGap) - k_TagGap;
+         return tags.arraySize * (k_TagHeight + k_TagGap) - k_TagGap;
       }
 
       public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
       {
+         s_RemoveTagContent.image = EditorGUIUtility.IconContent("Toolbar Minus").image;
+         s_RemoveTagContent.text = null;
+
+         Debug.Log(s_RemoveTagContent.image);
+
          label = EditorGUI.BeginProperty(position, label, property);
          position = EditorGUI.PrefixLabel(position, label);
          int oldIndentLevel = EditorGUI.indentLevel;
@@ -107,18 +113,23 @@ namespace BandoWare.GameplayTags.Editor
          GUI.Box(boxRect, GUIContent.none, s_TagBoxStyle);
 
          Rect inner = GetPaddedRect(boxRect, s_TagBoxStyle);
-         Rect tagRect = new(inner.x, inner.y, inner.width, EditorGUIUtility.singleLineHeight);
+         Rect tagRect = new(inner.x, inner.y, inner.width, k_TagHeight);
 
+         Color prevColor = GUI.color;
          if (explicitTagsProperty.hasMultipleDifferentValues)
          {
+            GUI.color = new Color(1, 1, 1, 0.7f);
             EditorGUI.LabelField(tagRect, "Tags have different values.");
          }
          else if (explicitTagsProperty.arraySize == 0)
          {
+            GUI.color = new Color(1, 1, 1, 0.7f);
             EditorGUI.LabelField(tagRect, "No tags added.");
          }
          else
          {
+            GUI.color = Color.white;
+
             for (int i = 0; i < explicitTagsProperty.arraySize; i++)
             {
                SerializedProperty element = explicitTagsProperty.GetArrayElementAtIndex(i);
@@ -128,7 +139,7 @@ namespace BandoWare.GameplayTags.Editor
                s_TempContent.text = isValid ? element.stringValue : element.stringValue + " (Invalid)";
                s_TempContent.tooltip = tag.Description ?? "No description";
 
-               Rect removeButtonRect = new(tagRect.x, tagRect.y, 18, tagRect.height);
+               Rect removeButtonRect = new(tagRect.x, tagRect.y, 22, tagRect.height);
                if (GUI.Button(removeButtonRect, s_RemoveTagContent))
                {
                   explicitTagsProperty.DeleteArrayElementAtIndex(i);
@@ -136,7 +147,7 @@ namespace BandoWare.GameplayTags.Editor
                   break;
                }
 
-               Rect labelRect = new(removeButtonRect.xMax + 2, tagRect.y, tagRect.width - 20, tagRect.height);
+               Rect labelRect = new(removeButtonRect.xMax + 4, tagRect.y, tagRect.width - 20, tagRect.height);
 
                Color previousColor = GUI.color;
                if (!isValid)
@@ -146,9 +157,11 @@ namespace BandoWare.GameplayTags.Editor
 
                GUI.color = previousColor;
 
-               tagRect.y += EditorGUIUtility.singleLineHeight + k_TagGap;
+               tagRect.y += k_TagHeight + k_TagGap;
             }
          }
+
+         GUI.color = prevColor;
 
          EditorGUI.indentLevel = oldIndentLevel;
          EditorGUI.EndProperty();
