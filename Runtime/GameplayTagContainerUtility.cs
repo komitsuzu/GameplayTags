@@ -51,6 +51,8 @@ namespace BandoWare.GameplayTags
 
       internal static void GetParentTags(List<int> tagIndices, GameplayTag tag, List<GameplayTag> parentTags)
       {
+         tag.ValidateIsValid();
+
          int index = tagIndices.BinarySearch(tag.RuntimeIndex);
          if (index < 0)
             index = ~index;
@@ -68,6 +70,8 @@ namespace BandoWare.GameplayTags
 
       internal static void GetChildTags(List<int> tagIndices, GameplayTag tag, List<GameplayTag> childTags)
       {
+         tag.ValidateIsValid();
+
          int index = tagIndices.BinarySearch(tag.RuntimeIndex);
          index = index < 0 ? ~index : index + 1;
 
