@@ -69,6 +69,10 @@ namespace BandoWare.GameplayTag.SourceGenerator
       private void GenerateTagClasses(StringBuilder sourceBuilder, TagNode node, int indentLevel)
       {
          string indent = new('\t', indentLevel);
+       
+         if (node.Name == "AllGameplayTags")
+            sourceBuilder.AppendLine($"{indent}[Obsolete]");
+
          sourceBuilder.AppendLine($"{indent}internal partial class {node.Name}");
          sourceBuilder.AppendLine($"{indent}{{");
 
