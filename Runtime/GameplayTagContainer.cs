@@ -454,6 +454,8 @@ namespace BandoWare.GameplayTags
       /// <inheritdoc />
       public void AddTag(GameplayTag tag)
       {
+         tag.ValidateIsValid();
+
          GameplayTagContainerIndices.Create(ref m_Indices);
          int index = BinarySearchUtility.Search(m_Indices.Explicit, tag.RuntimeIndex);
          if (index >= 0)
@@ -473,6 +475,8 @@ namespace BandoWare.GameplayTags
       /// <inheritdoc />
       public void RemoveTag(GameplayTag tag)
       {
+         tag.ValidateIsValid();
+
          if (!m_Indices.IsCreated)
             return;
 

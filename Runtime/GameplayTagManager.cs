@@ -115,6 +115,11 @@ namespace BandoWare.GameplayTags
          InitializeIfNeeded();
 
          s_HasBeenReloaded = true;
+
+         if (Application.isPlaying)
+            Debug.LogWarning("Gameplay tags have been reloaded at runtime." +
+               " Existing data structures using gameplay tags may not work as expected." +
+               " A domain reload is required.");
       }
    }
 }
