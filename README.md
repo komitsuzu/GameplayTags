@@ -1,4 +1,6 @@
-# Gameplay Tags for Unity
+<div align="center">
+    <img src="Documentation~/Images/Banner.png" alt="Package Banner">
+</div>
 
 ## Table of Contents
 
@@ -37,10 +39,6 @@
   * [License](#license)
 
 ## Overview
-
-<div align="center">
-    <img src="Documentation~/Images/GameplayTagPropertyPreview.png" alt="GameplayTagContainer Property">
-</div>
 
 This project is an implementation of gameplay tags, similar to those found in Unreal Engine, for use in Unity. Gameplay tags are a flexible and efficient way to handle and categorize gameplay-related properties and states.
 
