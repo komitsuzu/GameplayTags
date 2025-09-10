@@ -46,14 +46,9 @@ namespace BandoWare.GameplayTags
 
       public static bool RequestTag(string name, out GameplayTag tag)
       {
-         if (TryGetDefinition(name, out GameplayTagDefinition definition))
-         {
-            tag = definition.Tag;
-            return true;
-         }
-
-         tag = GameplayTag.None;
-         return false;
+         GameplayTag result = RequestTag(name, logWarningIfNotFound: false);
+         tag = result;
+         return tag.IsValid && !tag.IsNone;
       }
 
       private static bool TryGetDefinition(string name, out GameplayTagDefinition definition)
