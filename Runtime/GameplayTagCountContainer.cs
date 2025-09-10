@@ -44,22 +44,22 @@ namespace BandoWare.GameplayTags
       /// <summary>
       /// Event that is called when the count of any tag changes.
       /// </summary>
-      event OnTagCountChangedDelegate OnAnyTagCountChange;
+      public event OnTagCountChangedDelegate OnAnyTagCountChange;
 
       /// <summary>
       /// Eve that is called when any tag is added or removed.
       /// </summary>
-      event OnTagCountChangedDelegate OnAnyTagNewOrRemove;
+      public event OnTagCountChangedDelegate OnAnyTagNewOrRemove;
 
       /// <summary>
       /// Gets the count of a specific tag (the number of times it has been explicitly added).
       /// </summary>
-      int GetExplicitTagCount(GameplayTag tag);
+      public int GetExplicitTagCount(GameplayTag tag);
 
       /// <summary>
       /// Gets the count of a specific tag.
       /// </summary>
-      int GetTagCount(GameplayTag tag);
+      public int GetTagCount(GameplayTag tag);
 
       /// <summary>
       /// Registers a callback for a tag event.
@@ -67,7 +67,7 @@ namespace BandoWare.GameplayTags
       /// <param name="callback">The callback to register.</param>
       /// <param name="tag">The gameplay tag.</param>
       /// <param name="eventType">The type of event.</param>
-      void RegisterTagEventCallback(GameplayTag tag, GameplayTagEventType eventType, OnTagCountChangedDelegate callback);
+      public void RegisterTagEventCallback(GameplayTag tag, GameplayTagEventType eventType, OnTagCountChangedDelegate callback);
 
       /// <summary>
       /// Removes a callback for a tag event.
@@ -75,12 +75,12 @@ namespace BandoWare.GameplayTags
       /// <param name="callback">The callback to remove.</param>
       /// <param name="tag">The gameplay tag.</param>
       /// <param name="eventType">The type of event.</param>
-      void RemoveTagEventCallback(GameplayTag tag, GameplayTagEventType eventType, OnTagCountChangedDelegate callback);
+      public void RemoveTagEventCallback(GameplayTag tag, GameplayTagEventType eventType, OnTagCountChangedDelegate callback);
 
       /// <summary>
       /// Removes all callbacks for tag events.
       /// </summary>
-      void RemoveAllTagEventCallbacks();
+      public void RemoveAllTagEventCallbacks();
    }
 
    [DebuggerDisplay("{DebuggerDisplay,nq}")]
@@ -149,6 +149,8 @@ namespace BandoWare.GameplayTags
       /// <inheritdoc />
       public int GetTagCount(GameplayTag tag)
       {
+         tag.ValidateIsValid();
+
          m_TagCountMap.TryGetValue(tag, out int count);
          return count;
       }
@@ -156,6 +158,8 @@ namespace BandoWare.GameplayTags
       /// <inheritdoc />
       public int GetExplicitTagCount(GameplayTag tag)
       {
+         tag.ValidateIsValid();
+
          m_ExplicitTagCountMap.TryGetValue(tag, out int count);
          return count;
       }
@@ -163,6 +167,8 @@ namespace BandoWare.GameplayTags
       /// <inheritdoc />
       public void RegisterTagEventCallback(GameplayTag tag, GameplayTagEventType eventType, OnTagCountChangedDelegate callback)
       {
+         tag.ValidateIsValid();
+
          m_TagDelegateInfoMap.TryGetValue(tag, out GameplayTagDelegateInfo delegateInfo);
          GetEventDelegate(ref delegateInfo, eventType) += callback;
          m_TagDelegateInfoMap[tag] = delegateInfo;
@@ -171,6 +177,8 @@ namespace BandoWare.GameplayTags
       /// <inheritdoc />
       public void RemoveTagEventCallback(GameplayTag tag, GameplayTagEventType eventType, OnTagCountChangedDelegate callback)
       {
+         tag.ValidateIsValid();
+
          if (m_TagDelegateInfoMap.TryGetValue(tag, out GameplayTagDelegateInfo delegateInfo))
          {
             GetEventDelegate(ref delegateInfo, eventType) -= callback;
@@ -201,6 +209,8 @@ namespace BandoWare.GameplayTags
       /// <inheritdoc />
       public void AddTag(GameplayTag tag)
       {
+         tag.ValidateIsValid();
+
          using (ListPool<DeferredTagChangedDelegate>.Get(out List<DeferredTagChangedDelegate> delegates))
          {
             AddTagInternal(tag, delegates);
@@ -271,6 +281,8 @@ namespace BandoWare.GameplayTags
       /// <inheritdoc />
       public void RemoveTag(GameplayTag tag)
       {
+         tag.ValidateIsValid();
+
          using (ListPool<DeferredTagChangedDelegate>.Get(out List<DeferredTagChangedDelegate> tagChangeDelegates))
          {
             RemoveTagInternal(tag, tagChangeDelegates);

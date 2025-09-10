@@ -161,10 +161,21 @@ namespace BandoWare.GameplayTags
          m_Name = Definition.TagName;
       }
 
+      [Conditional("DEBUG")]
       private readonly void ValidateIsNotNone()
       {
-         if (m_Definition == GameplayTagDefinition.NoneTagDefinition)
+         if (IsNone)
             throw new InvalidOperationException("Cannot perform operation on GameplayTag.None.");
+      }
+
+      [Conditional("DEBUG")]
+      internal readonly void ValidateIsValid()
+      {
+         if (IsNone)
+            throw new InvalidOperationException("Cannot perform operation on GameplayTag.None.");
+
+         if (!IsValid)
+            throw new InvalidOperationException($"GameplayTag \"{m_Name}\" is not valid.");
       }
 
       public static implicit operator GameplayTag(string tagName)
