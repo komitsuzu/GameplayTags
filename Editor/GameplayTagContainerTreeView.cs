@@ -44,10 +44,6 @@ namespace BandoWare.GameplayTags.Editor
          added = EditorGUI.Toggle(rect, s_TempContent, item.IsIncluded);
          EditorGUI.showMixedValue = false;
 
-         Rect baseRowRect = rect;
-         baseRowRect.xMin += 18;
-         DoTagRowGUI(baseRowRect, item);
-
          if (EditorGUI.EndChangeCheck())
          {
             if (added)
@@ -55,6 +51,10 @@ namespace BandoWare.GameplayTags.Editor
             else
                RemoveTag(item.Tag);
          }
+
+         Rect baseRowRect = rect;
+         baseRowRect.xMin += 18;
+         DoTagRowGUI(baseRowRect, item);
       }
 
       protected override void OnTagAdded(GameplayTag tag)
