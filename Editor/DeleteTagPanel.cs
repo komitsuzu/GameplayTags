@@ -8,7 +8,6 @@ namespace BandoWare.GameplayTags.Editor
 {
    internal class DeleteTagPanel
    {
-      private const int k_AllSourcesOptionIndex = -1;
 
       public event Action OnClose;
       public event Action OnTagDeleted;
@@ -19,6 +18,7 @@ namespace BandoWare.GameplayTags.Editor
       private readonly IGameplayTagSource[] m_SourceFileOptions;
       private readonly string[] m_SourceFileNameOptions;
 
+      private int m_AllSourcesOptionIndex = -1;
       private int m_SelectedSourceFileIndex;
       private string m_ValidationError;
 
@@ -50,7 +50,8 @@ namespace BandoWare.GameplayTags.Editor
          {
             sourceFileOptions.Add("All Sources");
             sourceFileList.Add(null);
-            m_SelectedSourceFileIndex = k_AllSourcesOptionIndex;
+            m_AllSourcesOptionIndex = sourceFileOptions.Count - 1;
+            m_SelectedSourceFileIndex = m_AllSourcesOptionIndex;
          }
          else
          {
@@ -82,12 +83,12 @@ namespace BandoWare.GameplayTags.Editor
          GUILayout.Label("Delete Tag", m_PanelTitleStyle);
 
          float previousLabelWidth = EditorGUIUtility.labelWidth;
-         EditorGUIUtility.labelWidth = 90;
+         EditorGUIUtility.labelWidth = 60;
 
          EditorGUILayout.TextField("Tag", m_TagToDelete.Name);
 
          EditorGUI.BeginChangeCheck();
-         m_SelectedSourceFileIndex = EditorGUILayout.Popup("Source File", m_SelectedSourceFileIndex, m_SourceFileNameOptions);
+         m_SelectedSourceFileIndex = EditorGUILayout.Popup("From", m_SelectedSourceFileIndex, m_SourceFileNameOptions);
 
          EditorGUIUtility.labelWidth = previousLabelWidth;
 
@@ -162,7 +163,7 @@ namespace BandoWare.GameplayTags.Editor
 
       private bool IsAllSourcesSelected()
       {
-         return m_SelectedSourceFileIndex == m_SourceFileOptions.Length - 1 && m_SourceFileOptions[m_SelectedSourceFileIndex] == null;
+         return m_SelectedSourceFileIndex == m_AllSourcesOptionIndex;
       }
 
       private void ValidateFields()
