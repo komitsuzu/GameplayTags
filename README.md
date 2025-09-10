@@ -2,238 +2,160 @@
     <img src="Documentation~/Images/Banner.png" alt="Package Banner">
 </div>
 
-## Table of Contents
-
-* [Gameplay Tags for Unity](#gameplay-tags-for-unity)
-
-  * [Overview](#overview)
-  * [Features](#features)
-  * [Installation](#installation)
-  * [Usage](#usage)
-
-    * [Registering Tags](#registering-tags)
-
-      * [Assembly Attributes](#1-assembly-attributes)
-      * [JSON Files in Project Settings](#2-json-files-in-project-settings)
-    * [GameplayTagCountContainer](#gameplaytagcountcontainer)
-
-      * [Creating a Tag Container](#creating-a-tag-container)
-      * [Adding a Tag](#adding-a-tag)
-      * [Removing a Tag](#removing-a-tag)
-      * [Registering a Callback for Tag Changes](#registering-a-callback-for-tag-changes)
-      * [Removing a Callback](#removing-a-callback)
-      * [Querying the Count of a Tag](#querying-the-count-of-a-tag)
-      * [Clearing All Tags](#clearing-all-tags)
-    * [GameplayTagContainer](#gameplaytagcontainer)
-
-      * [Creating a Tag Container](#creating-a-tag-container-1)
-      * [Adding a Tag](#adding-a-tag-1)
-      * [Removing a Tag](#removing-a-tag-1)
-      * [Clearing All Tags](#clearing-all-tags-1)
-    * [Union and Intersection Operations](#union-and-intersection-operations)
-
-      * [Creating a Union of Tag Containers](#creating-a-union-of-tag-containers)
-      * [Creating an Intersection of Tag Containers](#creating-an-intersection-of-tag-containers)
-  * [Differences between GameplayTagCountContainer and GameplayTagContainer](#differences-between-gameplaytagcountcontainer-and-gameplaytagcontainer)
-  * [AllGameplayTags Generated Class](#allgameplaytags-generated-class)
-  * [License](#license)
-
-## Overview
-
-This project is an implementation of gameplay tags, similar to those found in Unreal Engine, for use in Unity. Gameplay tags are a flexible and efficient way to handle and categorize gameplay-related properties and states.
-
-## Features
-
-- Tag-based system for categorizing and managing gameplay elements.
-- Easy integration with existing Unity projects.
-- Flexible tagging system to suit a wide variety of use cases.
-
-## Installation
-
-1. Clone the repository or download the latest release.
-2. Open your Unity project.
-3. Add the package to your project using the Unity Package Manager:
-   - Click on `Window -> Package Manager`.
-   - Click the `+` button and select `Add package from git URL...`.
-   - Enter the following URL:
-     ```
-     https://github.com/BandoWare/GameplayTags.git
-     ```
-   - Click `Add`.
-
-## Usage
-
-### Registering Tags
-
-Gameplay tags can now be registered in **two different ways**:
-
-#### 1. Assembly Attributes
-
-Use this approach when your code requires certain tags to exist. For example:
-
-```csharp
-[assembly: GameplayTag("Damage.Fatal")]
-[assembly: GameplayTag("Damage.Miss")]
-[assembly:GameplayTag("CrowdControl.Stunned")]
-[assembly:GameplayTag("CrowdControl.Slow")]
-```
-
-#### 2. JSON Files in Project Settings
-
-Alternatively, you can register tags through **JSON files**.
-Create a folder named `ProjectSettings/GameplayTags` in your Unity project.
-Every `.json` file inside this folder will be scanned and its tags automatically registered.
-
-The JSON format is based on an object where each property is a tag name.
-
-* The value of the property must be another object.
-* You can leave it empty, or add metadata:
-
-  * `Comment`: developer-facing description.
-  * `Children`: nested object containing child tags.
-
-👉 **Important notes:**
-
-* You can declare tags **directly** at the root level, or organize them with `Children`.
-* Both approaches can be **mixed in the same file**.
-* The `Children` property is **recursive**, so tags can be nested at any depth if needed.
+# Gameplay Tags for Unity
 
 ---
 
-#### Example mixing both styles
+## Overview
+
+This package brings to Unity the concept of **Gameplay Tags**, inspired by Unreal Engine’s Gameplay Tag system.
+
+Gameplay Tags are **string-based identifiers** organized in a hierarchical way. They provide a flexible and efficient way to describe, categorize, and query gameplay-related states and properties.
+
+They are useful for:
+
+* Marking abilities, states, effects, or interactions.
+* Checking conditions without hard-coded references.
+* Creating clean and scalable gameplay logic.
+
+With this package, you can register, organize, and use tags directly in Unity projects with an API designed to feel natural in C#.
+
+---
+
+## Getting Started
+
+Before you can use tags, you first need to **create them**.
+There are three main ways to register tags in your project:
+
+### 1. JSON Files in Project Settings
+
+Create a folder named `ProjectSettings/GameplayTags`.
+Every `.json` file inside this folder will be automatically scanned and its tags registered.
+
+The format is a JSON object where **each property is a tag**.
+The value of that property is another object, which may optionally include metadata such as a developer-facing comment:
 
 ```json
 {
-  // Direct tags
-  "CrowdControl.Standard": {},
   "Damage.Fatal": {},
-
-  // Direct tag with a comment
   "Damage.Miss": {
     "Comment": "Attack landed but did not cause damage"
   },
-
-  // Hierarchical tags
-  "CrowdControl": {
-    "Comment": "Crowd control tags",
-    "Children": {
-      "Stunned": {
-        "Comment": "Unit cannot act at all"
-      },
-      "Slow": {}
-    }
+  "CrowdControl.Stunned": {
+    "Comment": "Unit cannot act at all"
   }
 }
 ```
 
-### GameplayTagCountContainer
+👉 You can have multiple JSON files in this folder — there’s no limitation to just one.
 
-`GameplayTagCountContainer` is a class used to manage gameplay tags with event callbacks for tag count changes. Here’s how to use it:
+---
 
-#### Creating a Tag Container
+### 2. Creating Tags via the Editor
 
-```csharp
-GameplayTagCountContainer tagContainer = new GameplayTagCountContainer();
-```
+Tags can also be created directly in the **Unity Editor**.
+The editor will generate the corresponding JSON file automatically and insert the tag for you *(creating the file if necessary)*.
 
-#### Adding a Tag
+<div align="center">
+    <img src="Documentation~/Images/Placeholder.png" alt="Editor Placeholder">
+    <p><em>[Placeholder — here goes the screenshot showing where to add tags in the Editor]</em></p>
+</div>
 
-```csharp
-GameplayTag tag = GameplayTagManager.RequestTag("ExampleTag");
-tagContainer.AddTag(tag);
-```
+---
 
-#### Removing a Tag
+### 3. Registering Tags with Assembly Attributes
 
-```csharp
-tagContainer.RemoveTag(tag);
-```
-
-#### Registering a Callback for Tag Changes
+The third option is to declare tags directly in your assembly using attributes:
 
 ```csharp
-void OnTagChanged(GameplayTag tag, int newCount)
-{
-    Debug.Log($"Tag {tag.Name} count changed to {newCount}");
-}
-
-tagContainer.RegisterTagEventCallback(tag, GameplayTagEventType.AnyCountChange, OnTagChanged);
+[assembly: GameplayTag("Damage.Fatal")]
+[assembly: GameplayTag("Damage.Miss")]
+[assembly: GameplayTag("CrowdControl.Stunned")]
 ```
 
-#### Removing a Callback
+This approach is particularly useful when your **code requires the existence of certain tags**.
+It ensures that the tag is always registered alongside the code that depends on it.
 
-```csharp
-tagContainer.RemoveTagEventCallback(tag, GameplayTagEventType.AnyCountChange, OnTagChanged);
-```
+---
 
-#### Querying the Count of a Tag
+## API
 
-```csharp
-int tagCount = tagContainer.GetTagCount(tag);
-Debug.Log($"Tag {tag.Name} has a count of {tagCount}");
-```
+### `GameplayTag`
 
-#### Clearing All Tags
+A lightweight struct representing a gameplay tag.
+Strings are implicitly convertible to `GameplayTag`, so you can write `"Damage.Fire"` directly where a `GameplayTag` is expected.
 
-```csharp
-tagContainer.Clear();
-```
+#### Core Properties
 
-### GameplayTagContainer
+* **`string Name`** → The full name of the tag (e.g., `"Damage.Fire"`).
+* **`bool IsValid`** → Whether the tag is valid (registered in the system).
+* **`bool IsNone`** → Whether the tag is the special `None` tag.
+* **`bool IsLeaf`** → Whether the tag has no children.
+* **`GameplayTag None`** → A special value representing an empty or invalid tag.
 
-`GameplayTagContainer` is a class for storing a collection of gameplay tags. It is serializable and provides a user-friendly interface in the Unity editor.
+#### Hierarchy Properties
 
-#### Creating a Tag Container
+* **`ParentTags`** → All parent tags of this tag, ordered from root to immediate parent.
 
-```csharp
-GameplayTagContainer tagContainer = new GameplayTagContainer();
-```
+  * Example: for `"A.B.C"`, the parent tags are `["A", "A.B"]`.
 
-#### Adding a Tag
+* **`ChildTags`** → All direct child tags of this tag.
 
-```csharp
-GameplayTag tag = GameplayTagManager.RequestTag("ExampleTag");
-tagContainer.AddTag(tag);
-// or 
-tagContaier.AddTag("ExampleTag");
-```
+  * Example: if `"A.B.C"` has two children `"A.B.C.D"` and `"A.B.C.E"`, they will appear here.
 
-#### Removing a Tag
+* **`HierarchyTags`** → The full hierarchy chain including this tag and all of its parents.
 
-```csharp
-tagContainer.RemoveTag(tag);
-```
+  * Example: for `"A.B.C"`, the hierarchy tags are `["A", "A.B", "A.B.C"]`.
 
-#### Clearing All Tags
+---
 
-```csharp
-tagContainer.Clear();
-```
+### `GameplayTagManager`
 
-### Union and Intersection Operations
+A static class responsible for managing all registered tags in the project.
 
-Union and intersection operations can be performed on any type of container that implements `IGameplayTagContainer`. These operations can be used to create new `GameplayTagContainer` instances.
+* **`RequestTag(string name, bool logWarningIfNotFound = true)`** → Gets a `GameplayTag` by name (returns `GameplayTag.None` if not found).
+* **`GetAllTags()`** → Returns all registered tags.
+* **`HasBeenReloaded`** *(property)* → Indicates whether the tags have been reloaded at runtime.
 
-#### Creating a Union of Tag Containers
+---
 
-```csharp
-GameplayTagContainer union = GameplayTagContainer.Union(container1, container2);
-```
+### `GameplayTagContainer`
 
-#### Creating an Intersection of Tag Containers
+The main API for working with sets of tags.
+Provides methods to add, remove, query, and combine gameplay tags.
 
-```csharp
-GameplayTagContainer intersection = GameplayTagContainer.Intersection(container1, container2);
-```
+#### Managing Tags
 
-## Differences between GameplayTagCountContainer and GameplayTagContainer
+* **`AddTag(tag)`** → Adds a tag to the container.
+* **`RemoveTag(tag)`** → Removes a tag from the container.
+* **`Clear()`** → Clears all tags.
 
-- **GameplayTagCountContainer**: Focuses on managing tags with the ability to register callbacks for when tag counts change. It is useful when you need to respond to tag count changes.
-- **GameplayTagContainer**: Designed to store a collection of tags, it is serializable and offers a user-friendly interface in the Unity editor. It provides basic tag management without the event-driven functionality of `GameplayTagCountContainer`.
+#### Querying Tags
 
-## AllGameplayTags Generated Class
+* **`HasTag(tag)`** → Checks if the container contains the given tag (directly or via hierarchy).
+* **`HasAny(container)`** → Returns `true` if any tag from another container are present.
+* **`HasAll(container)`** → Returns `true` if all tags from another container are present.
+* **`HasAnyExact(container)`** → Like `HasAny`, but only matches tags explicitly added.
+* **`HasAllExact(container)`** → Like `HasAll`, but only matches tags explicitly added.
 
-A Source Generator provides access to any gameplay tag declared within the current assembly without requiring a dedicated field to store the tag value. This approach eliminates the need to repeatedly call `GameplayTagManager.RequestTag`. For example, the gameplay tag "A.B.C" can be accessed through `AllGameplayTags.A.B.C.Get()`, simplifying tag retrieval and enhancing performance by avoiding redundant tag requests. [Read More](Documentation~/CodeGeneration.md).
+#### Combining Containers
+
+* **`Union(containerA, containerB)`** → Creates a new container with all unique tags from both.
+* **`Intersection(containerA, containerB)`** → Creates a new container with only the tags present in both.
+
+---
+
+### `GameplayTagCountContainer`
+
+A variation of `GameplayTagContainer` that also tracks how many times each tag has been added, with support for callbacks when counts change.
+
+Additional API:
+
+* **`GetTagCount(tag)`** → Returns the current count of the given tag.
+* **`RegisterTagEventCallback(tag, GameplayTagEventType type, Action<GameplayTag,int> callback)`** → Registers a callback triggered when the tag count changes.
+* **`RemoveTagEventCallback(tag, GameplayTagEventType type, Action<GameplayTag,int> callback)`** → Removes a previously registered callback.
+
+---
 
 ## License
 
