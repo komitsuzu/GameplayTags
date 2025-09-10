@@ -14,13 +14,21 @@ namespace BandoWare.GameplayTags.Editor
       private const float k_TagHeight = 18f;
 
       private static GUIContent s_TempContent = new();
-      private static readonly GUIContent s_RemoveTagContent = new("-", "Remove tag");
       private static GUIContent s_EditTagsContent;
 
       private static GUIStyle s_TagBoxStyle;
 
+      private GUIContent m_RemoveTagContent;
+
       public GameplayTagContainerPropertyDrawer()
       {
+         m_RemoveTagContent = new GUIContent
+         {
+            image = EditorGUIUtility.IconContent("Toolbar Minus").image,
+            text = null,
+            tooltip = "Remove this tag."
+         };
+
          s_EditTagsContent = new GUIContent("Edit Tags...", "Edit tags in a popup window.");
          if (s_TagBoxStyle == null)
          {
@@ -67,11 +75,6 @@ namespace BandoWare.GameplayTags.Editor
 
       public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
       {
-         s_RemoveTagContent.image = EditorGUIUtility.IconContent("Toolbar Minus").image;
-         s_RemoveTagContent.text = null;
-
-         Debug.Log(s_RemoveTagContent.image);
-
          label = EditorGUI.BeginProperty(position, label, property);
          position = EditorGUI.PrefixLabel(position, label);
          int oldIndentLevel = EditorGUI.indentLevel;
@@ -140,7 +143,7 @@ namespace BandoWare.GameplayTags.Editor
                s_TempContent.tooltip = tag.Description ?? "No description";
 
                Rect removeButtonRect = new(tagRect.x, tagRect.y, 22, tagRect.height);
-               if (GUI.Button(removeButtonRect, s_RemoveTagContent))
+               if (GUI.Button(removeButtonRect, m_RemoveTagContent))
                {
                   explicitTagsProperty.DeleteArrayElementAtIndex(i);
                   property.serializedObject.ApplyModifiedProperties();
