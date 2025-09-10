@@ -68,7 +68,6 @@ namespace BandoWare.GameplayTags.Editor
          }
 
          GameplayTagTreeViewItem item = args.item as GameplayTagTreeViewItem;
-         DoTagRowGUI(rect, item);
 
          if (GUI.Button(rect, s_TempContent, EditorStyles.label))
          {
@@ -77,6 +76,8 @@ namespace BandoWare.GameplayTags.Editor
 
             m_OnSelectionChange?.Invoke();
          }
+
+         DoTagRowGUI(rect, item);
       }
    }
 }
