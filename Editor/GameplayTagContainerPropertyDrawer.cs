@@ -7,7 +7,7 @@ namespace BandoWare.GameplayTags.Editor
    [CustomPropertyDrawer(typeof(GameplayTagContainer))]
    public class GameplayTagContainerPropertyDrawer : PropertyDrawer
    {
-      private const float k_Gap = 3.0f;
+      private const float k_Gap = 2.0f;
       private const float k_TagGap = 4.0f;
       private const float k_ButtonsWidth = 90f;
       private const float k_ButtonHeight = 20f;
@@ -61,7 +61,7 @@ namespace BandoWare.GameplayTags.Editor
          float tagsInnerHeight = CalcTagsInnerHeight(property);
          float tagsBoxHeight = CalcContentHeight(s_TagBoxStyle, tagsInnerHeight);
 
-         return Mathf.Max(buttonsHeight, tagsBoxHeight);
+         return Mathf.Max(buttonsHeight, tagsBoxHeight) + 6;
       }
 
       private float CalcTagsInnerHeight(SerializedProperty property)
