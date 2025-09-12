@@ -85,15 +85,8 @@ namespace BandoWare.GameplayTags.Editor
          Reload();
       }
 
-      public override float GetTotalHeight()
-      {
-         return base.GetTotalHeight() + EditorStyles.toolbar.fixedHeight * 2;
-      }
-
       public override void OnGUI(Rect rect)
       {
-         rect.height = Mathf.Min(rect.height, GetTotalHeight());
-
          s_Styles ??= new Styles();
 
          Rect toolbarRect = rect;
@@ -119,6 +112,7 @@ namespace BandoWare.GameplayTags.Editor
             m_DeleteTagPanel.OnGUI(panelRect);
          }
 
+         rect.height = Mathf.Min(rect.height, GetTotalHeight());
          base.OnGUI(rect);
       }
 

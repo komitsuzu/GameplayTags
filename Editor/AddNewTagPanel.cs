@@ -143,7 +143,7 @@ namespace BandoWare.GameplayTags.Editor
          if (HasError)
             return 160;
 
-         return 130f;
+         return 140;
       }
 
       private FileGameplayTagSource GetOrCreateFileTagSource()
