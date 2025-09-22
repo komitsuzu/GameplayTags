@@ -5,22 +5,26 @@ namespace BandoWare.GameplayTags
 {
    public static class GameplayTagContainerExtensionMethods
    {
-      public static bool HasTag<T>(this T container, GameplayTag gameplayTag) where T : IGameplayTagContainer
+      public static bool HasTag<T>(this T container, GameplayTag gameplayTag)
+         where T : IReadOnlyGameplayTagContainer
       {
          return container.Indices.Implicit != null && BinarySearchUtility.Search(container.Indices.Implicit, gameplayTag.RuntimeIndex) >= 0;
       }
 
-      public static bool HasTagExact<T>(this T container, GameplayTag gameplayTag) where T : IGameplayTagContainer
+      public static bool HasTagExact<T>(this T container, GameplayTag gameplayTag)
+         where T : IReadOnlyGameplayTagContainer
       {
          return container.Indices.Explicit != null && BinarySearchUtility.Search(container.Indices.Explicit, gameplayTag.RuntimeIndex) >= 0;
       }
 
-      public static bool HasAny<T, U>(this T container, in U other) where T : IGameplayTagContainer where U : IGameplayTagContainer
+      public static bool HasAny<T, U>(this T container, in U other)
+         where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer
       {
          return HasAnyInternal(container.Indices.Implicit, other?.Indices.Explicit);
       }
 
-      public static bool HasAnyExact<T, U>(this T container, in U other) where T : IGameplayTagContainer where U : IGameplayTagContainer
+      public static bool HasAnyExact<T, U>(this T container, in U other)
+         where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer
       {
          return HasAnyInternal(container.Indices.Explicit, other?.Indices.Explicit);
       }
@@ -103,12 +107,14 @@ namespace BandoWare.GameplayTags
          return j == otherTagIndices.Count - 1;
       }
 
-      public static bool HasAll<T, U>(this T container, in U other) where T : IGameplayTagContainer where U : IGameplayTagContainer
+      public static bool HasAll<T, U>(this T container, in U other)
+         where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer
       {
          return HasAllInternal(container.Indices.Implicit, other?.Indices.Explicit);
       }
 
-      public static bool HasAll<T, U, V>(this T container, in U otherA, in V otherB) where T : IGameplayTagContainer where U : IGameplayTagContainer where V : IGameplayTagContainer
+      public static bool HasAll<T, U, V>(this T container, in U otherA, in V otherB)
+         where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer where V : IReadOnlyGameplayTagContainer
       {
          if (otherA.IsEmpty && otherB.IsEmpty)
             return true;
@@ -129,7 +135,8 @@ namespace BandoWare.GameplayTags
          }
       }
 
-      public static bool HasAllExact<T, U>(this T container, in U other) where T : IGameplayTagContainer where U : IGameplayTagContainer
+      public static bool HasAllExact<T, U>(this T container, in U other)
+         where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer
       {
          return HasAllInternal(container.Indices.Explicit, other?.Indices.Explicit);
       }

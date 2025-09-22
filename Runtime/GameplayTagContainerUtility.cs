@@ -6,7 +6,7 @@ namespace BandoWare.GameplayTags
    public static class GameplayTagContainerUtility
    {
       public static bool HasAll<T, U, V>(this T containerA, in U containerB, in V other)
-         where T : IGameplayTagContainer where U : IGameplayTagContainer where V : IGameplayTagContainer
+         where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer where V : IReadOnlyGameplayTagContainer
       {
          if (containerA.IsEmpty && containerB.IsEmpty)
             return true;
@@ -28,7 +28,7 @@ namespace BandoWare.GameplayTags
       }
 
       public static bool HasAllExact<T, U, V>(this T containerA, in U containerB, in V other)
-         where T : IGameplayTagContainer where U : IGameplayTagContainer where V : IGameplayTagContainer
+         where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer where V : IReadOnlyGameplayTagContainer
       {
          if (containerA.IsEmpty && containerB.IsEmpty)
             return true;

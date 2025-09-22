@@ -39,7 +39,19 @@ namespace BandoWare.GameplayTags
       public OnTagCountChangedDelegate OnNewOrRemove;
    }
 
-   public interface IGameplayTagCountContainer : IGameplayTagContainer
+   public interface IReadOnlyGameplayTagCountContainer : IReadOnlyGameplayTagContainer
+   {
+      /// <summary>
+      /// Gets the count of a specific tag (the number of times it has been explicitly added).
+      /// </summary>
+      public int GetExplicitTagCount(GameplayTag tag);
+      /// <summary>
+      /// Gets the count of a specific tag.
+      /// </summary>
+      public int GetTagCount(GameplayTag tag);
+   }
+
+   public interface IGameplayTagCountContainer : IGameplayTagContainer, IReadOnlyGameplayTagCountContainer
    {
       /// <summary>
       /// Event that is called when the count of any tag changes.
@@ -50,16 +62,6 @@ namespace BandoWare.GameplayTags
       /// Eve that is called when any tag is added or removed.
       /// </summary>
       public event OnTagCountChangedDelegate OnAnyTagNewOrRemove;
-
-      /// <summary>
-      /// Gets the count of a specific tag (the number of times it has been explicitly added).
-      /// </summary>
-      public int GetExplicitTagCount(GameplayTag tag);
-
-      /// <summary>
-      /// Gets the count of a specific tag.
-      /// </summary>
-      public int GetTagCount(GameplayTag tag);
 
       /// <summary>
       /// Registers a callback for a tag event.
@@ -221,7 +223,7 @@ namespace BandoWare.GameplayTags
       }
 
       /// <inheritdoc />
-      public void AddTags<T>(in T other) where T : IGameplayTagContainer
+      public void AddTags<T>(in T other) where T : IReadOnlyGameplayTagContainer
       {
          using (ListPool<DeferredTagChangedDelegate>.Get(out List<DeferredTagChangedDelegate> delegates))
          {
@@ -256,25 +258,17 @@ namespace BandoWare.GameplayTags
                m_Indices.Implicit.Insert(index, tagInHeirarchy.RuntimeIndex);
 
                if (delegateInfo.OnNewOrRemove != null)
-               {
                   tagChangeDelegates.Add(new(tagInHeirarchy, 1, delegateInfo.OnNewOrRemove));
-               }
 
                if (OnAnyTagNewOrRemove != null)
-               {
                   tagChangeDelegates.Add(new(tagInHeirarchy, 1, OnAnyTagNewOrRemove));
-               }
             }
 
             if (delegateInfo.OnAnyChange != null)
-            {
                tagChangeDelegates.Add(new(tagInHeirarchy, previousTagCount + 1, delegateInfo.OnAnyChange));
-            }
 
             if (OnAnyTagCountChange != null)
-            {
                tagChangeDelegates.Add(new(tagInHeirarchy, previousTagCount + 1, OnAnyTagCountChange));
-            }
          }
       }
 
@@ -288,26 +282,20 @@ namespace BandoWare.GameplayTags
             RemoveTagInternal(tag, tagChangeDelegates);
 
             for (int i = 0; i < tagChangeDelegates.Count; i++)
-            {
                tagChangeDelegates[i].Execute();
-            }
          }
       }
 
       /// <inheritdoc />
-      public void RemoveTags<T>(in T other) where T : IGameplayTagContainer
+      public void RemoveTags<T>(in T other) where T : IReadOnlyGameplayTagContainer
       {
          using (ListPool<DeferredTagChangedDelegate>.Get(out List<DeferredTagChangedDelegate> tagChangeDelegates))
          {
             foreach (GameplayTag gameplayTag in other.GetExplicitTags())
-            {
                RemoveTagInternal(gameplayTag, tagChangeDelegates);
-            }
 
             for (int i = 0; i < tagChangeDelegates.Count; i++)
-            {
                tagChangeDelegates[i].Execute();
-            }
          }
       }
 
@@ -334,9 +322,7 @@ namespace BandoWare.GameplayTags
          {
             m_TagDelegateInfoMap.TryGetValue(tagInHierarchy, out GameplayTagDelegateInfo delegateInfo);
             if (!m_TagCountMap.TryGetValue(tagInHierarchy, out int tagCount))
-            {
                break;
-            }
 
             if (tagCount == 1)
             {

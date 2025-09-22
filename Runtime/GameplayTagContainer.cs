@@ -52,7 +52,7 @@ namespace BandoWare.GameplayTags
       }
    }
 
-   public interface IGameplayTagContainer : IEnumerable<GameplayTag>
+   public interface IReadOnlyGameplayTagContainer : IEnumerable<GameplayTag>
    {
       /// <summary>
       /// Gets a value indicating whether this container is empty.
@@ -79,18 +79,6 @@ namespace BandoWare.GameplayTags
       public GameplayTagContainerIndices Indices { get; }
 
       /// <summary>
-      /// Adds a tag to this container.
-      /// </summary>
-      /// <param name="gameplayTag">The tag to add.</param>
-      public void AddTag(GameplayTag gameplayTag);
-
-      /// <summary>
-      /// Removes a tag from this container.
-      /// </summary>
-      /// <param name="gameplayTag">The tag to remove.</param>
-      public void RemoveTag(GameplayTag gameplayTag);
-
-      /// <summary>
       /// Gets an enumerator for all tags in this container.
       /// </summary>
       /// <returns>An enumerator for all tags in this container.</returns>
@@ -101,13 +89,6 @@ namespace BandoWare.GameplayTags
       /// </summary>
       /// <returns>An enumerator for the explicit tags in this container.</returns>
       public GameplayTagEnumerator GetExplicitTags();
-
-      /// <summary>
-      /// Adds tags from another container to this container.
-      /// </summary>
-      /// <typeparam name="T">The type of the other container.</typeparam>
-      /// <param name="other">The other container.</param>
-      public void AddTags<T>(in T other) where T : IGameplayTagContainer;
 
       /// <summary>
       /// Gets the parent tags of a tag in this container.
@@ -136,13 +117,35 @@ namespace BandoWare.GameplayTags
       /// <param name="tag"></param>
       /// <param name="childTags"></param>
       public void GetExplicitChildTags(GameplayTag tag, List<GameplayTag> childTags);
+   }
+
+   public interface IGameplayTagContainer : IReadOnlyGameplayTagContainer
+   {
+      /// <summary>
+      /// Adds a tag to this container.
+      /// </summary>
+      /// <param name="gameplayTag">The tag to add.</param>
+      public void AddTag(GameplayTag gameplayTag);
+
+      /// <summary>
+      /// Removes a tag from this container.
+      /// </summary>
+      /// <param name="gameplayTag">The tag to remove.</param>
+      public void RemoveTag(GameplayTag gameplayTag);
+
+      /// <summary>
+      /// Adds tags from another container to this container.
+      /// </summary>
+      /// <typeparam name="T">The type of the other container.</typeparam>
+      /// <param name="other">The other container.</param>
+      public void AddTags<T>(in T other) where T : IReadOnlyGameplayTagContainer;
 
       /// <summary>
       /// Removes tags from this container that are present in another container.
       /// </summary>
       /// <typeparam name="T">The type of the other container.</typeparam>
       /// <param name="other">The other container.</param>
-      public void RemoveTags<T>(in T other) where T : IGameplayTagContainer;
+      public void RemoveTags<T>(in T other) where T : IReadOnlyGameplayTagContainer;
 
       /// <summary>
       /// Clears all tags from this container.
@@ -186,7 +189,7 @@ namespace BandoWare.GameplayTags
       /// <summary>
       /// Initializes a new instance of the <see cref="GameplayTagContainer"/> class by copying tags from another container.
       /// </summary>
-      public GameplayTagContainer(IGameplayTagContainer other)
+      public GameplayTagContainer(IReadOnlyGameplayTagContainer other)
       {
          Copy(this, other);
       }
@@ -207,7 +210,7 @@ namespace BandoWare.GameplayTags
       /// </summary>
       /// <param name="dest">The destination container.</param>
       /// <param name="src">The source container.</param>
-      public static void Copy<T>(GameplayTagContainer dest, in T src) where T : IGameplayTagContainer
+      public static void Copy<T>(GameplayTagContainer dest, in T src) where T : IReadOnlyGameplayTagContainer
       {
          if (src.IsEmpty)
             return;
@@ -224,14 +227,14 @@ namespace BandoWare.GameplayTags
       /// <param name="lhs">The first container.</param>
       /// <param name="rhs">The second container.</param>
       /// <returns>A new <see cref="GameplayTagContainer"/> that contains the intersection of the two containers.</returns>
-      public static GameplayTagContainer Intersection<T, U>(in T lhs, in U rhs) where T : IGameplayTagContainer where U : IGameplayTagContainer
+      public static GameplayTagContainer Intersection<T, U>(in T lhs, in U rhs) where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer
       {
          GameplayTagContainer intersection = new();
          intersection.AddIntersection(lhs, rhs);
          return intersection;
       }
 
-      public static void Intersection<T, U>(GameplayTagContainer output, in T lhs, in U rhs) where T : IGameplayTagContainer where U : IGameplayTagContainer
+      public static void Intersection<T, U>(GameplayTagContainer output, in T lhs, in U rhs) where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer
       {
          if (output == null)
             throw new ArgumentNullException(nameof(output));
@@ -249,7 +252,7 @@ namespace BandoWare.GameplayTags
       /// <typeparam name="U">The type of the second container.</typeparam>
       /// <param name="lhs">The first container.</param>
       /// <param name="rhs">The second container.</param>
-      internal void AddIntersection<T, U>(in T lhs, in U rhs) where T : IGameplayTagContainer where U : IGameplayTagContainer
+      internal void AddIntersection<T, U>(in T lhs, in U rhs) where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer
       {
          static void OrderedListIntersection(List<int> a, List<int> b, List<int> dst)
          {
@@ -293,7 +296,7 @@ namespace BandoWare.GameplayTags
       /// <param name="lhs">The first container.</param>
       /// <param name="rhs">The second container.</param>
       /// <returns>A new <see cref="GameplayTagContainer"/> that contains the union of the two containers.</returns>
-      public static GameplayTagContainer Union<T, U>(in T lhs, in U rhs) where T : IGameplayTagContainer where U : IGameplayTagContainer
+      public static GameplayTagContainer Union<T, U>(in T lhs, in U rhs) where T : IReadOnlyGameplayTagContainer where U : IReadOnlyGameplayTagContainer
       {
          static void OrderedListUnion(List<int> a, List<int> b, List<int> dst)
          {
@@ -348,14 +351,14 @@ namespace BandoWare.GameplayTags
       }
 
       /// <summary>
-      /// Compares the explicit tags between this instance and another <see cref="IGameplayTagContainer"/> instance.
+      /// Compares the explicit tags between this instance and another <see cref="IReadOnlyGameplayTagContainer"/> instance.
       /// It populates the lists of added and removed tags based on the comparison.
       /// </summary>
-      /// <typeparam name="T">Type that implements <see cref="IGameplayTagContainer"/>.</typeparam>
+      /// <typeparam name="T">Type that implements <see cref="IReadOnlyGameplayTagContainer"/>.</typeparam>
       /// <param name="other">The other tag container to compare against.</param>
       /// <param name="added">The list that will be populated with tags that are in this container but not in the other.</param>
       /// <param name="removed">The list that will be populated with tags that are in the other container but not in this one.</param>
-      public void GetDiffExplicitTags<T>(T other, List<GameplayTag> added, List<GameplayTag> removed) where T : IGameplayTagContainer
+      public void GetDiffExplicitTags<T>(T other, List<GameplayTag> added, List<GameplayTag> removed) where T : IReadOnlyGameplayTagContainer
       {
          // Get the indices of the explicit tags from the other container.
          GameplayTagContainerIndices otherIndices = other.Indices;
@@ -466,7 +469,7 @@ namespace BandoWare.GameplayTags
       }
 
       /// <inheritdoc />
-      public void AddTags<T>(in T container) where T : IGameplayTagContainer
+      public void AddTags<T>(in T container) where T : IReadOnlyGameplayTagContainer
       {
          foreach (GameplayTag tag in container.GetExplicitTags())
             AddTag(tag);
@@ -492,7 +495,8 @@ namespace BandoWare.GameplayTags
       }
 
       /// <inheritdoc />
-      public void RemoveTags<T>(in T other) where T : IGameplayTagContainer
+      public void RemoveTags<T>(in T other)
+         where T : IReadOnlyGameplayTagContainer
       {
          if (!m_Indices.IsCreated)
             return;
