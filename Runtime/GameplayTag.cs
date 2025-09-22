@@ -185,11 +185,23 @@ namespace BandoWare.GameplayTags
 
       public static bool operator ==(in GameplayTag lhs, in GameplayTag rhs)
       {
+         if (!lhs.IsValid && !rhs.IsValid)
+            return lhs.Name == rhs.Name;
+
+         if (lhs.IsValid != rhs.IsValid)
+            return false;
+
          return lhs.Definition == rhs.Definition;
       }
 
       public static bool operator !=(in GameplayTag lhs, in GameplayTag rhs)
       {
+         if (!lhs.IsValid && !rhs.IsValid)
+            return lhs.Name != rhs.Name;
+
+         if (lhs.IsValid != rhs.IsValid)
+            return true;
+
          return lhs.Definition != rhs.Definition;
       }
    }

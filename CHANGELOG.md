@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `IReadOnlyGameplayTagContainer` and `IReadOnlyGameplayTagContainer` interfaces.
+ -Added explicit validity mismatch checks in GameplayTag comparisons to ensure correct equality behavior.
+
+### Fixed 
+
+- Fixed conflicting conditions in GameplayTagPropertyDrawer by changing if to else if and removing redundant invalid-tag check.
 
 ### Removed
 

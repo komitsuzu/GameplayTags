@@ -25,15 +25,10 @@ namespace BandoWare.GameplayTags.Editor
             s_TempContent.text = $"Invalid Tag: {nameProperty.stringValue}";
             s_TempContent.tooltip = "The tag is not valid. It may have been deleted or renamed.";
          }
-         if (tag != GameplayTag.None)
+         else if (tag != GameplayTag.None)
          {
             s_TempContent.text = tag.Name;
             s_TempContent.tooltip = tag.Description;
-         }
-         else if (!tag.IsValid)
-         {
-            s_TempContent.text = $"Invalid Tag: {nameProperty.stringValue}";
-            s_TempContent.tooltip = "The tag is not valid. It may have been deleted or renamed.";
          }
          else
          {
