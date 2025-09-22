@@ -21,14 +21,7 @@ namespace BandoWare.GameplayTags
 
       internal readonly int RuntimeIndex => m_Definition.RuntimeIndex;
 
-      internal readonly GameplayTagDefinition Definition
-      {
-         get
-         {
-            ValidateIsNotNone();
-            return m_Definition ?? GameplayTagDefinition.NoneTagDefinition;
-         }
-      }
+      internal readonly GameplayTagDefinition Definition => m_Definition ?? GameplayTagDefinition.NoneTagDefinition;
 
       /// <inheritdoc cref="GameplayTagDefinition.ParentTags" />
       [DebuggerBrowsable(DebuggerBrowsableState.Never)]
